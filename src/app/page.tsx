@@ -1,93 +1,96 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Link from 'next/link'
-import { Search, BookOpen, Users, Target, Heart, Brain, Utensils, Dumbbell, Shield } from 'lucide-react'
+import { Search, TrendingUp, BarChart3, Link as LinkIcon, Globe, Target, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Progress } from "@/components/ui/progress"
+import { Badge } from "@/components/ui/badge"
 
-export const dynamic = 'force-dynamic'
+export default function BacklinkGenerator() {
+  const [url, setUrl] = useState('')
+  const [isGenerating, setIsGenerating] = useState(false)
+  const [generationResults, setGenerationResults] = useState<any[]>([])
+  const router = useRouter()
 
-export default function Index() {
-  const wellnessCategories = [
+  const handleGenerate = async () => {
+    if (!url) return
+
+    setIsGenerating(true)
+    try {
+      const response = await fetch('/api/generate-backlinks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      })
+      const data = await response.json()
+      setGenerationResults(data.backlinks || [])
+
+      // After successful generation, redirect to dashboard after a short delay
+      setTimeout(() => {
+        router.push('/dashboard')
+      }, 2000)
+    } catch (error) {
+      console.error('Error generating backlinks:', error)
+    } finally {
+      setTimeout(() => {
+        setIsGenerating(false)
+      }, 2000)
+    }
+  }
+
+  const features = [
     {
-      id: 'mental-health',
-      title: 'Mental Health',
-      icon: Brain,
-      description: 'Stress management, anxiety relief, and mental wellness',
-      articleCount: 487,
-      color: 'bg-secondary/20 hover:bg-secondary/30'
+      icon: LinkIcon,
+      title: 'High Authority Sites',
+      description: 'Generate backlinks from domains with DA 30+ for maximum SEO impact',
+      count: '500+'
     },
     {
-      id: 'nutrition',
-      title: 'Nutrition',
-      icon: Utensils,
-      description: 'Science-based nutrition guidance and meal planning',
-      articleCount: 623,
-      color: 'bg-accent/20 hover:bg-accent/30'
-    },
-    {
-      id: 'fitness',
-      title: 'Fitness & Exercise',
-      icon: Dumbbell,
-      description: 'Evidence-based fitness routines and movement therapy',
-      articleCount: 412,
-      color: 'bg-primary/10 hover:bg-primary/20'
-    },
-    {
-      id: 'autoimmune',
-      title: 'Autoimmune Health',
-      icon: Shield,
-      description: 'Managing autoimmune conditions naturally',
-      articleCount: 298,
-      color: 'bg-secondary/20 hover:bg-secondary/30'
-    },
-    {
-      id: 'holistic',
-      title: 'Holistic Healing',
-      icon: Heart,
-      description: 'Integrative approaches to wellness and healing',
-      articleCount: 356,
-      color: 'bg-accent/20 hover:bg-accent/30'
-    },
-    {
-      id: 'inflammation',
-      title: 'Inflammatory Conditions',
       icon: Target,
-      description: 'Natural anti-inflammatory strategies and treatments',
-      articleCount: 267,
-      color: 'bg-primary/10 hover:bg-primary/20'
+      title: 'Niche Targeting',
+      description: 'AI-powered niche matching to ensure relevant backlink placement',
+      count: '95%'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Fast Generation',
+      description: 'Generate up to 1000 backlinks in under 10 minutes',
+      count: '<10min'
+    },
+    {
+      icon: BarChart3,
+      title: 'Success Tracking',
+      description: 'Real-time monitoring of backlink status and indexation',
+      count: '24/7'
     }
   ]
 
-  const featuredContent = [
+  const sampleBacklinks = [
     {
-      title: 'Complete Guide to Anti-Inflammatory Diet',
-      description: 'Evidence-based nutrition strategies to reduce chronic inflammation',
-      category: 'Nutrition',
-      readTime: '12 min read',
-      downloads: 1247
+      domain: 'techblog.com',
+      da: 45,
+      status: 'active',
+      anchor: 'best practices',
+      type: 'guest-post'
     },
     {
-      title: 'Mindfulness for Autoimmune Conditions',
-      description: 'How meditation and mindfulness can support immune system regulation',
-      category: 'Mental Health',
-      readTime: '8 min read',
-      downloads: 892
+      domain: 'industryreview.net',
+      da: 38,
+      status: 'pending',
+      anchor: 'expert guide',
+      type: 'resource-page'
     },
     {
-      title: 'Exercise Therapy for Chronic Pain',
-      description: 'Safe, effective movement strategies for pain management',
-      category: 'Fitness',
-      readTime: '15 min read',
-      downloads: 1034
+      domain: 'newsportal.org',
+      da: 52,
+      status: 'active',
+      anchor: 'comprehensive analysis',
+      type: 'citation'
     }
-  ]
-
-  const trustMetrics = [
-    { label: 'Expert Articles', value: '2,500+' },
-    { label: 'Research Citations', value: '8,400+' },
-    { label: 'Healthcare Professionals', value: '150+' },
-    { label: 'Community Members', value: '25k+' }
   ]
 
   return (
@@ -96,179 +99,174 @@ export default function Index() {
       <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-primary-foreground" />
-            </div>
-            <span className="font-bold text-xl text-primary">Wellness Academy</span>
+            <Image
+              src="/generated/linkforge-logo.png"
+              alt="LinkForge"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+            <span className="font-bold text-xl text-primary">LinkForge</span>
           </div>
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-            <Link href="/resources" className="text-foreground hover:text-primary transition-colors">Resource Library</Link>
-            <Link href="/assessment" className="text-foreground hover:text-primary transition-colors">Wellness Assessment</Link>
-            <Link href="/about" className="text-foreground hover:text-primary transition-colors">About</Link>
+            <a href="#generator" className="text-foreground hover:text-primary transition-colors">Generator</a>
+            <a href="/dashboard" className="text-foreground hover:text-primary transition-colors">Dashboard</a>
+            <a href="#analytics" className="text-foreground hover:text-primary transition-colors">Analytics</a>
+            <a href="#pricing" className="text-foreground hover:text-primary transition-colors">Pricing</a>
           </nav>
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden">
+      <section id="generator" className="relative py-20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-secondary/30 via-background to-accent/20"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-bold text-foreground leading-tight">
-                  Your Gateway to
-                  <span className="text-primary block">Science-Backed</span>
-                  <span className="text-accent">Wellness</span>
+                  Generate
+                  <span className="text-primary block">High-Quality</span>
+                  <span className="text-accent">Backlinks</span>
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-xl">
-                  Discover comprehensive, evidence-based wellness resources crafted by healthcare professionals.
-                  From mental health to nutrition, find your path to optimal wellbeing.
+                  Boost your SEO rankings with our automated backlink generation system.
+                  Create hundreds of quality backlinks from high authority domains in minutes.
                 </p>
               </div>
 
-              {/* Search Bar */}
-              <div className="relative max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
-                <Input
-                  placeholder="Search wellness topics..."
-                  className="pl-10 py-3 text-base"
-                />
+              {/* URL Input */}
+              <div className="space-y-4">
+                <div className="relative">
+                  <Globe className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                  <Input
+                    placeholder="Enter your website URL (e.g., https://yoursite.com)"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    className="pl-10 py-3 text-base"
+                  />
+                </div>
+                <Button
+                  onClick={handleGenerate}
+                  disabled={!url || isGenerating}
+                  size="lg"
+                  className="w-full"
+                >
+                  {isGenerating ? (
+                    <>
+                      <Clock className="w-5 h-5 mr-2 animate-spin" />
+                      Generating Backlinks...
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-5 h-5 mr-2" />
+                      Generate Backlinks
+                    </>
+                  )}
+                </Button>
               </div>
 
-              {/* Quick Access Buttons */}
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" size="sm" className="rounded-full">
-                  <Brain className="w-4 h-4 mr-2" />
-                  Mental Health
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  <Utensils className="w-4 h-4 mr-2" />
-                  Nutrition
-                </Button>
-                <Button variant="outline" size="sm" className="rounded-full">
-                  <Target className="w-4 h-4 mr-2" />
-                  Assessment Tools
-                </Button>
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 gap-4 pt-4">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">2.5M+</div>
+                  <div className="text-sm text-muted-foreground">Backlinks Generated</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary">45+</div>
+                  <div className="text-sm text-muted-foreground">Average Domain Authority</div>
+                </div>
               </div>
             </div>
 
-            <div className="relative">
-              <div className="aspect-video rounded-2xl overflow-hidden shadow-2xl">
-                <Image
-                  src="/generated/wellness-hero.png"
-                  alt="Wellness and mindfulness"
-                  width={600}
-                  height={400}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+            <div className="space-y-6">
+              {/* Generation Progress */}
+              {isGenerating && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Generating Backlinks</CardTitle>
+                    <CardDescription>Processing your URL and finding opportunities...</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      <Progress value={75} />
+                      <div className="text-sm text-muted-foreground">
+                        Finding high authority domains... 75% complete
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
-      {/* Trust Metrics */}
-      <section className="py-12 bg-card/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {trustMetrics.map((metric, index) => (
-              <div key={index} className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">{metric.value}</div>
-                <div className="text-sm text-muted-foreground">{metric.label}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Category Grid */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Explore Wellness Topics
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Dive deep into evidence-based wellness content across multiple health domains
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {wellnessCategories.map((category) => {
-              const IconComponent = category.icon
-              return (
-                <Link key={category.id} href={`/resources?category=${category.id}`}>
-                  <Card className={`h-full transition-all duration-300 hover:shadow-lg hover:scale-105 ${category.color} border-0`}>
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center space-x-3 mb-2">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <IconComponent className="w-6 h-6 text-primary" />
+              {/* Sample Results */}
+              {!isGenerating && generationResults.length === 0 && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="text-lg">Sample Results</CardTitle>
+                    <CardDescription>Example of backlinks you might get</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {sampleBacklinks.map((link, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <Badge variant={link.status === 'active' ? 'default' : 'secondary'}>
+                              DA {link.da}
+                            </Badge>
+                            <div>
+                              <div className="font-medium text-sm">{link.domain}</div>
+                              <div className="text-xs text-muted-foreground">"{link.anchor}"</div>
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {link.status === 'active' ? (
+                              <CheckCircle className="w-4 h-4 text-green-500" />
+                            ) : (
+                              <Clock className="w-4 h-4 text-yellow-500" />
+                            )}
+                            <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                          </div>
                         </div>
-                        <CardTitle className="text-lg">{category.title}</CardTitle>
-                      </div>
-                      <CardDescription className="text-sm">
-                        {category.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-xs text-muted-foreground">
-                        {category.articleCount} expert articles
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              )
-            })}
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Content */}
+      {/* Features Section */}
       <section className="py-20 bg-card/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Featured Resources
+              Why Choose LinkForge?
             </h2>
             <p className="text-lg text-muted-foreground">
-              Most popular evidence-based guides and resources
+              Advanced backlink generation with industry-leading results
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredContent.map((content, index) => (
-              <Card key={index} className="hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs bg-secondary/20 text-secondary-foreground px-2 py-1 rounded-full">
-                      {content.category}
-                    </span>
-                    <span className="text-xs text-muted-foreground">{content.readTime}</span>
-                  </div>
-                  <CardTitle className="text-xl">{content.title}</CardTitle>
-                  <CardDescription>{content.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>{content.downloads} downloads</span>
-                    <Button variant="ghost" size="sm">
-                      <BookOpen className="w-4 h-4 mr-2" />
-                      Read More
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link href="/resources">
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                Explore All Resources
-              </Button>
-            </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((feature, index) => {
+              const IconComponent = feature.icon
+              return (
+                <Card key={index} className="text-center hover:shadow-lg transition-shadow duration-300">
+                  <CardHeader className="pb-3">
+                    <div className="mx-auto w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                      <IconComponent className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="text-2xl font-bold text-accent mb-2">{feature.count}</div>
+                    <CardTitle className="text-lg">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription>{feature.description}</CardDescription>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>
@@ -278,25 +276,20 @@ export default function Index() {
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-3xl mx-auto space-y-6">
             <h2 className="text-3xl md:text-4xl font-bold text-primary-foreground">
-              Start Your Wellness Journey Today
+              Ready to Boost Your Rankings?
             </h2>
             <p className="text-lg text-primary-foreground/80">
-              Take our comprehensive wellness assessment to get personalized recommendations
-              based on your unique health profile and goals.
+              Join thousands of websites already benefiting from our automated backlink generation system.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/assessment">
-                <Button size="lg" variant="secondary" className="bg-card text-card-foreground hover:bg-card/90">
-                  <Target className="w-5 h-5 mr-2" />
-                  Take Wellness Assessment
-                </Button>
-              </Link>
-              <Link href="/resources">
-                <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
-                  <BookOpen className="w-5 h-5 mr-2" />
-                  Browse Resources
-                </Button>
-              </Link>
+              <Button size="lg" variant="secondary" className="bg-card text-card-foreground hover:bg-card/90">
+                <TrendingUp className="w-5 h-5 mr-2" />
+                Start Free Trial
+              </Button>
+              <Button size="lg" variant="outline" className="border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary">
+                <BarChart3 className="w-5 h-5 mr-2" />
+                View Pricing
+              </Button>
             </div>
           </div>
         </div>
@@ -304,53 +297,22 @@ export default function Index() {
 
       {/* Footer */}
       <footer className="bg-card border-t py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-primary-foreground" />
-                </div>
-                <span className="font-bold text-lg text-primary">Wellness Academy</span>
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Empowering your journey to optimal health through evidence-based wellness resources.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Resources</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/resources" className="hover:text-primary">All Articles</Link></li>
-                <li><Link href="/resources?type=guides" className="hover:text-primary">Comprehensive Guides</Link></li>
-                <li><Link href="/resources?type=tools" className="hover:text-primary">Interactive Tools</Link></li>
-                <li><Link href="/resources?type=downloads" className="hover:text-primary">Downloads</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Health Topics</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/resources?category=mental-health" className="hover:text-primary">Mental Health</Link></li>
-                <li><Link href="/resources?category=nutrition" className="hover:text-primary">Nutrition</Link></li>
-                <li><Link href="/resources?category=fitness" className="hover:text-primary">Fitness</Link></li>
-                <li><Link href="/resources?category=autoimmune" className="hover:text-primary">Autoimmune</Link></li>
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Support</h3>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/about" className="hover:text-primary">About Us</Link></li>
-                <li><Link href="/contact" className="hover:text-primary">Contact</Link></li>
-                <li><Link href="/privacy" className="hover:text-primary">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-primary">Terms of Service</Link></li>
-              </ul>
-            </div>
+        <div className="container mx-auto px-4 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-4">
+            <Image
+              src="/generated/linkforge-logo.png"
+              alt="LinkForge"
+              width={32}
+              height={32}
+              className="rounded-lg"
+            />
+            <span className="font-bold text-lg text-primary">LinkForge</span>
           </div>
-
-          <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 Wellness Academy. All rights reserved. Built with clinical expertise and scientific rigor.</p>
+          <p className="text-sm text-muted-foreground mb-6">
+            Professional backlink generation for serious SEO results
+          </p>
+          <div className="text-xs text-muted-foreground">
+            © 2024 LinkForge. All rights reserved. Built for SEO professionals.
           </div>
         </div>
       </footer>
